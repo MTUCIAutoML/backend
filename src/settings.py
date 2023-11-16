@@ -2,15 +2,15 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_ADDR: str = 'postgres'
+    DB_ADDR: str = 'localhost'
     DB_PORT: int = 5432
     DB_USERNAME: str = "postgres"
-    DB_PASSWORD: str
-    DB_NAME: str = "AutoML"
+    DB_PASSWORD: str = 'blog_postgres'
+    DB_NAME: str = "automl"
 
-    SERVER_ADDR: str = "0.0.0.0"
+    SERVER_ADDR: str = "localhost"
     SERVER_PORT: int = 8000
-    SERVER_TEST: bool = False
+    SERVER_TEST: bool = True
 
 
 settings = Settings()
