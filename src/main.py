@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from settings import settings
 from routers import router
+from db.initdb import initdb
 
 app = FastAPI(debug=settings.SERVER_TEST)
 app.include_router(router)
@@ -23,6 +24,7 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"],
                    )
+initdb()
 
 if __name__ == "__main__":
     uvicorn.run(
