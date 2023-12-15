@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from models.base import Base, apply_status
 
 
-class Model(Base):
+class ModelHistory(Base):
     __tablename__ = "learned_models"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     status_learning: Mapped[str] = mapped_column(apply_status, nullable=False, index=True,
