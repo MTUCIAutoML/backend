@@ -1,5 +1,6 @@
 from typing import List
 
+import torch
 from ultralytics import YOLO
 from fastapi import Depends
 
@@ -11,6 +12,7 @@ from models.base import apply_status
 async def train_yolo(training_id: int,
                      db: Session):
     #TODO generate yaml files and work with files
+    torch.cuda.set_per_process_memory_fraction(0.3)
     model = db.query(ModelHistory).filter_by(id=training_id).first()
     yolo = YOLO('yolov8n.yaml')
     model.status_learning = 'processing'
