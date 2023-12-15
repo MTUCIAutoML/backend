@@ -1,7 +1,4 @@
-FROM python:3.9-bookworm
-
-RUN apt update
-RUN apt -y install wkhtmltopdf
+FROM ultralytics/ultralytics
 
 WORKDIR /app
 COPY requirements.txt .
