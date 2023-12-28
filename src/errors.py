@@ -13,3 +13,7 @@ def with_errors(*errors: HTTPException):
 
 def learning_session_not_found():
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learning session not found")
+
+
+def RTSP_not_found():
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
