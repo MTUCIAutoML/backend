@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from schemas.base import BaseModel
@@ -13,6 +13,7 @@ class TrainingConf(BaseModel):
     batch: Optional[int] = 16
     imgsz: Optional[int] = 640
     optimizer: Optional[str] = 'auto'
+    class_names: List[str]
 
 
 class TrainingConfGetFull(BaseModel):
