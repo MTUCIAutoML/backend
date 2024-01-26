@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     AWS_REGION: Optional[str] = None
     AWS_BUCKET: str = 'automl'
 
-    SERVER_ADDR: str = "localhost"
+    SERVER_ADDR: str = "0.0.0.0"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
 
