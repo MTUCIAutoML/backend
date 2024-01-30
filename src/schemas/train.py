@@ -21,8 +21,8 @@ class TrainingConfGetFull(BaseModel):
     name: str
     model: str
     status: str
-    dataset_s3_url: Optional[str]
-    weight_s3_url: Optional[str]
+    s3_dataset_url: Optional[str]
+    s3_weight_url: Optional[str]
     created_at: datetime
     training_conf: Dict[str, Any]
 
