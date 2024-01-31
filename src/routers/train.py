@@ -38,7 +38,8 @@ async def create_configuration(params: TrainingConf,
         'batch': params.batch,
         'imgsz': params.imgsz,
         'optimizer': params.optimizer,
-        'classes': params.class_names
+        'classes': params.class_names,
+        'device': params.device
     }
 
     new_conf = TrainingConfiguration(
