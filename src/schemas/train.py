@@ -14,6 +14,7 @@ class TrainingConf(BaseModel):
     imgsz: Optional[int] = 640
     optimizer: Optional[str] = 'auto'
     class_names: List[str]
+    device: str
 
 
 class TrainingConfGetFull(BaseModel):
@@ -21,8 +22,8 @@ class TrainingConfGetFull(BaseModel):
     name: str
     model: str
     status: str
-    s3_dataset_url: Optional[str]
-    s3_weight_url: Optional[str]
+    dataset_s3_location: Optional[str]
+    weight_s3_location: Optional[str]
     created_at: datetime
     training_conf: Dict[str, Any]
 

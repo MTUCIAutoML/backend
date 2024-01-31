@@ -1,9 +1,7 @@
 import os
 import zipfile
-import glob
-import shutil
 
-from typing import List
+
 from ultralytics import YOLO
 from tempfile import TemporaryDirectory
 
@@ -48,7 +46,7 @@ async def train_yolo(conf_id: int,
             batch=conf.training_conf['batch'],
             imgsz=conf.training_conf['imgsz'],
             optimizer=conf.training_conf['optimizer'],
-            device=0
+            device=conf.training_conf['device'] if conf.training_conf['device'] == 'cpu' else 0
         )
 
         with zipfile.ZipFile(tmp + '/result.zip', 'w') as f:
