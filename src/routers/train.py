@@ -102,14 +102,12 @@ async def get_file(conf_id: int,
     if conf is None:
         raise
     if file_type == 'dataset':
-        link: str = str(conf.s3_dataset_url)
-        if link is None:
+        if conf.dataset_s3_location is None:
             raise
-        return link
+        return conf.s3_dataset_url
     elif file_type == 'result':
-        link: str = str(conf.s3_weight_url)
-        if link is None:
+        if conf.weight_s3_location is None:
             raise
-        return link
+        return conf.s3_weight_url
     else:
         raise

@@ -1,7 +1,7 @@
 import os
 import zipfile
 
-
+import pandas as pd
 from ultralytics import YOLO
 from tempfile import TemporaryDirectory
 
@@ -20,7 +20,6 @@ async def train_yolo(conf_id: int,
     yolo = YOLO(str(conf.model) + '.yaml')
     conf.status = 'processing'
     db.commit()
-
     with TemporaryDirectory(dir=os.getcwd()) as tmp:
 
         with open(tmp + f'/{conf.name}.zip', mode='w+b') as f:
@@ -49,17 +48,30 @@ async def train_yolo(conf_id: int,
             device=conf.training_conf['device'] if conf.training_conf['device'] == 'cpu' else 0
         )
 
-        with zipfile.ZipFile(tmp + '/result.zip', 'w') as f:
-            for dirname, subdirs, files in os.walk(tmp+f'/{conf.name}'):
-                f.write(dirname)
-                for filename in files:
-                    f.write(p.join(dirname, filename))
+        yolo.export(format='onnx')
 
-        with open(tmp + '/result.zip', 'rb') as f:
-            path = f'/user/{conf_id}/result/result.zip'
+        data = pd.read_csv(tmp + f'/{conf.name}/results.csv')
+        data = data.to_dict()
+        clean_data = {}
+
+        for key in data.keys():
+            if key.strip() == 'metrics/precision(B)':
+                clean_data['precision'] = data[key]
+            elif key.strip() == 'metrics/recall(B)':
+                clean_data['recall'] = data[key]
+
+        conf.result_metrics = clean_data
+        db.commit()
+
+        with open(tmp + f'/{conf.name}/weights/best.pt', 'r') as f:
+            path = f'/user/{conf_id}/result/best.pt'
             s3.upload_file(f, path)
 
-        conf.weight_s3_location = path
+        with open(tmp + f'/{conf.name}/weights/best.onnx', 'r') as f:
+            path = f'/user/{conf_id}/result/best.onnx'
+            s3.upload_file(f, path)
+
+    conf.weight_s3_location = f'/user/{conf_id}/result/best.pt'
 
     conf.status = 'processed'
     db.commit()

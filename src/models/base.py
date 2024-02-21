@@ -3,5 +3,5 @@ from sqlalchemy.dialects.postgresql import ENUM
 
 Base = declarative_base()
 
-apply_status = ENUM('pending', 'processing', 'processed', name="apply_status", metadata=Base.metadata)
+apply_status = ENUM('pending', 'processing', 'processed', 'error', name="apply_status", metadata=Base.metadata)
 

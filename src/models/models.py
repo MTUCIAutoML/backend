@@ -23,6 +23,7 @@ class TrainingConfiguration(Base):
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False,
                                                  server_default=func.current_timestamp())
     training_conf: Mapped[Dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    result_metrics: Mapped[Dict[str, Any]] = mapped_column(JSONB, nullable=True)
     '''
     epoch
     time

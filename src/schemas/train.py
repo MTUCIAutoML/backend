@@ -26,5 +26,6 @@ class TrainingConfGetFull(BaseModel):
     weight_s3_location: Optional[str]
     created_at: datetime
     training_conf: Dict[str, Any]
+    result_metrics: Optional[Dict[str, Any]]
 
 
