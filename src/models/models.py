@@ -20,6 +20,7 @@ class TrainingConfiguration(Base):
     status: Mapped[str] = mapped_column(apply_status, nullable=False, index=True, server_default='pending')
     dataset_s3_location: Mapped[str] = mapped_column(nullable=True)
     weight_s3_location: Mapped[str] = mapped_column(nullable=True)
+    onnx_s3_location: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False,
                                                  server_default=func.current_timestamp())
     training_conf: Mapped[Dict[str, Any]] = mapped_column(JSONB, nullable=False)
@@ -40,5 +41,9 @@ class TrainingConfiguration(Base):
     @hybrid_property
     def s3_weight_url(self):
         return s3.generate_link(bucket=settings.AWS_BUCKET, key=self.weight_s3_location)
+    
+    @hybrid_property
+    def s3_onnx_url(self):
+        return s3.generate_link(bucket=settings.AWS_BUCKET, key=self.onnx_s3_location)
 
 

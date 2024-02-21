@@ -63,15 +63,16 @@ async def train_yolo(conf_id: int,
         conf.result_metrics = clean_data
         db.commit()
 
-        with open(tmp + f'/{conf.name}/weights/best.pt', 'r') as f:
+        with open(tmp + f'/{conf.name}/weights/best.pt', 'rb') as f:
             path = f'/user/{conf_id}/result/best.pt'
             s3.upload_file(f, path)
 
-        with open(tmp + f'/{conf.name}/weights/best.onnx', 'r') as f:
+        with open(tmp + f'/{conf.name}/weights/best.onnx', 'rb') as f:
             path = f'/user/{conf_id}/result/best.onnx'
             s3.upload_file(f, path)
 
     conf.weight_s3_location = f'/user/{conf_id}/result/best.pt'
+    conf.onnx_s3_location = f'/user/{conf_id}/result/best.onnx'
 
     conf.status = 'processed'
     db.commit()

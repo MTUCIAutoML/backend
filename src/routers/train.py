@@ -105,9 +105,11 @@ async def get_file(conf_id: int,
         if conf.dataset_s3_location is None:
             raise
         return conf.s3_dataset_url
-    elif file_type == 'result':
+    elif file_type == 'pt':
         if conf.weight_s3_location is None:
             raise
         return conf.s3_weight_url
+    elif file_type == 'onnx':
+        return conf.s3_onnx_url
     else:
         raise
