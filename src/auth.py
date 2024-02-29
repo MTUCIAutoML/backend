@@ -27,7 +27,7 @@ def encode_token(payload) -> str:
 def decode_token(token: str, token_type: str, suppress: bool = False) -> Dict[str, Any]:
     try:
         data = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'],
-                          options={"require": ["exp", "role", "identity"]})
+                          options={"require": ["exp", "role"]})
         if data["role"] != token_type:
             raise errors.token_validation_failed()
         return data
