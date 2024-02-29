@@ -4,6 +4,11 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
+    JWT_SECRET: str = 'super_puper_long_secure_secret' # sign key
+    JWT_ACCESS_EXPIRE: int = 5  # In minutes
+    JWT_REFRESH_EXPIRE: int = 60  # In minutes
+    JWT_REFRESH_LONG_EXPIRE: int = 12  # In hours
+
     DB_ADDR: str = "172.16.1.10"
     DB_PORT: int = 5432
     DB_USERNAME: str = "postgres"
@@ -16,7 +21,7 @@ class Settings(BaseSettings):
     AWS_REGION: Optional[str] = None
     AWS_BUCKET: str = 'automl'
 
-    SERVER_ADDR: str = "0.0.0.0"
+    SERVER_ADDR: str = "127.0.0.1"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
 
