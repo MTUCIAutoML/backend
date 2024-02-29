@@ -13,7 +13,7 @@ from settings import settings
 from models.user import User
 from schemas.login import Refresh
 
-path = '/api'
+path = '/'
 
 
 def set_cookie(access: str, response: Response, max_age: int):
