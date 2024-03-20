@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = 'redis://172.16.1.10:6379/0'
     CELERY_RESULT_BACKEND: str = 'redis://172.16.1.10:6379/0'
 
-    SERVER_ADDR: str = "127.0.0.1"
+    SERVER_ADDR: str = "0.0.0.0"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
 
