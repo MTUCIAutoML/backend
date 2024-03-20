@@ -14,7 +14,8 @@ from db import Session
 from models.models import TrainingConfiguration
 from s3.s3 import s3
 from settings import settings
-from db.session import _session
+from db.session import engine
+from sqlalchemy.orm import Session
 
 
 celery = Celery(__name__)
@@ -24,7 +25,7 @@ celery.conf.result_backend = settings.CELERY_RESULT_BACKEND
 
 @celery.task(name="train")
 def train(conf_id: int):
-    db = _session()
+    db = Session(engine)
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     yolo = YOLO(str(conf.model) + '.yaml')
     conf.status = 'processing'
