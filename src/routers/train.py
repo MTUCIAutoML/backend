@@ -1,7 +1,7 @@
 import os.path as p
 from typing import List
 
-from fastapi import APIRouter, UploadFile, File, Depends, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, Depends
 from fastapi.responses import RedirectResponse
 from tempfile import TemporaryDirectory
 from celery.result import AsyncResult
@@ -12,8 +12,7 @@ from db import get_database, Session
 from schemas.train import TrainingConf, TrainingConfGetFull
 from s3.s3 import s3
 from models.models import TrainingConfiguration
-from mlcore.yolo import train_yolo
-from mlcore.celery_app import train
+from celery_app import train
 from auth import get_user
 
 router = APIRouter()
