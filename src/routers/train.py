@@ -4,12 +4,16 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File, Depends, BackgroundTasks
 from fastapi.responses import RedirectResponse
 from tempfile import TemporaryDirectory
+from celery.result import AsyncResult
+
+from starlette.responses import JSONResponse
 
 from db import get_database, Session
 from schemas.train import TrainingConf, TrainingConfGetFull
 from s3.s3 import s3
 from models.models import TrainingConfiguration
 from mlcore.yolo import train_yolo
+from mlcore.celery_app import train
 from auth import get_user
 
 router = APIRouter()
@@ -81,15 +85,26 @@ async def upload_dataset(conf_id: int,
         raise
 
 
-@router.post('/{conf_id}/start', status_code=204)
+@router.post('/{conf_id}/start')
 async def start_training(conf_id: int,
-                         training: BackgroundTasks,
                          db: Session = Depends(get_database),
                          user=Depends(get_user)):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
     if conf is None:
         raise
-    training.add_task(train_yolo, conf_id, db)
+    task = train.delay(conf_id)
+    return JSONResponse({"task_id": task.id})
+
+
+@router.get("/tasks/{task_id}")
+def get_status(task_id):
+    task_result = AsyncResult(task_id)
+    result = {
+        "task_id": task_id,
+        "task_status": task_result.status,
+        "task_result": task_result.result
+    }
+    return JSONResponse(result)
 
 
 @router.delete('/{conf_id}')
