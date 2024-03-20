@@ -3,6 +3,7 @@ import os
 import zipfile
 
 import pandas as pd
+from fastapi import Depends
 from ultralytics import YOLO
 from tempfile import TemporaryDirectory
 from celery import Celery
@@ -22,9 +23,7 @@ celery.conf.result_backend = settings.CELERY_RESULT_BACKEND
 
 
 @celery.task(name="train")
-def train(conf_id: int):
-    print('ido')
-    db = get_database()
+def train(conf_id: int, db:Session = Depends(get_database)):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     yolo = YOLO(str(conf.model) + '.yaml')
     conf.status = 'processing'
