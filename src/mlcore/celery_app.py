@@ -25,9 +25,9 @@ celery.conf.result_backend = settings.CELERY_RESULT_BACKEND
 
 
 @celery.task(name="train")
-def train(conf_id: int, user_id: int, db: Session = Depends(get_database)):
-    # db = _session()
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user_id).first()
+def train(conf_id: int, user_id: int):
+    db = _session()
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     yolo = YOLO(str(conf.model) + '.yaml')
     conf.status = 'processing'
     db.commit()

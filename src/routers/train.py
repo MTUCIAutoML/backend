@@ -22,7 +22,7 @@ router = APIRouter()
 async def get_all_configurations(db: Session = Depends(get_database),
                                 #  user=Depends(get_user)
                                  ):
-    conf = db.query(TrainingConfiguration).filter_by(created_by=1).all()
+    conf = db.query(TrainingConfiguration).all()
     return conf
 
 
@@ -31,7 +31,7 @@ async def get_conf_by_id(conf_id: int,
                          db: Session = Depends(get_database),
                         #  user=Depends(get_user)
                          ):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     return conf
 
 
@@ -55,8 +55,7 @@ async def create_configuration(params: TrainingConf,
     new_conf = TrainingConfiguration(
         name=params.name,
         model=params.model,
-        training_conf=training_params,
-        created_by=1
+        training_conf=training_params
     )
     db.add(new_conf)
     db.commit()
@@ -72,7 +71,7 @@ async def upload_dataset(conf_id: int,
                          ):
     data = await dataset.read()
     try:
-        training = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
+        training = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
         if training.dataset_s3_location is not None:
             raise
         with TemporaryDirectory(prefix='data') as tmp:
@@ -93,7 +92,7 @@ async def start_training(conf_id: int,
                          db: Session = Depends(get_database),
                         #  user=Depends(get_user)
                          ):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
     task = train.delay(conf_id, 1)
@@ -113,9 +112,8 @@ def get_status(task_id):
 
 @router.delete('/{conf_id}')
 async def delete_conf(conf_id: int,
-                      db: Session = Depends(get_database),
-                      user=Depends(get_user)):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
+                      db: Session = Depends(get_database)):
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
     db.delete(conf)
@@ -124,9 +122,8 @@ async def delete_conf(conf_id: int,
 @router.get('/{conf_id}/{file_type}', status_code=302, response_class=RedirectResponse)
 async def get_file(conf_id: int,
                    file_type: str,
-                   db: Session = Depends(get_database),
-                   user=Depends(get_user)):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
+                   db: Session = Depends(get_database)):
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
     if file_type == 'dataset':
