@@ -12,7 +12,7 @@ from db import get_database, Session
 from schemas.train import TrainingConf, TrainingConfGetFull
 from s3.s3 import s3
 from models.models import TrainingConfiguration
-from celery_app import train
+from mlcore.celery_app import train
 from auth import get_user
 
 router = APIRouter()
@@ -20,23 +20,26 @@ router = APIRouter()
 
 @router.get('/all', response_model=List[TrainingConfGetFull])
 async def get_all_configurations(db: Session = Depends(get_database),
-                                 user=Depends(get_user)):
-    conf = db.query(TrainingConfiguration).filter_by(created_by=user.id).all()
+                                #  user=Depends(get_user)
+                                 ):
+    conf = db.query(TrainingConfiguration).filter_by(created_by=1).all()
     return conf
 
 
 @router.get('/{conf_id}', response_model=TrainingConfGetFull)
 async def get_conf_by_id(conf_id: int,
                          db: Session = Depends(get_database),
-                         user=Depends(get_user)):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
+                        #  user=Depends(get_user)
+                         ):
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
     return conf
 
 
 @router.post('/', response_model=TrainingConfGetFull)
 async def create_configuration(params: TrainingConf,
                                db: Session = Depends(get_database),
-                               user=Depends(get_user)):
+                            #    user=Depends(get_user)
+                               ):
     print(params)
     training_params = {
         'epochs': params.epochs,
@@ -53,7 +56,7 @@ async def create_configuration(params: TrainingConf,
         name=params.name,
         model=params.model,
         training_conf=training_params,
-        created_by=user.id
+        created_by=1
     )
     db.add(new_conf)
     db.commit()
@@ -65,10 +68,11 @@ async def create_configuration(params: TrainingConf,
 async def upload_dataset(conf_id: int,
                          dataset: UploadFile = File(...),
                          db: Session = Depends(get_database),
-                         user=Depends(get_user)):
+                        #  user=Depends(get_user)
+                         ):
     data = await dataset.read()
     try:
-        training = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
+        training = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
         if training.dataset_s3_location is not None:
             raise
         with TemporaryDirectory(prefix='data') as tmp:
@@ -87,11 +91,12 @@ async def upload_dataset(conf_id: int,
 @router.post('/{conf_id}/start')
 async def start_training(conf_id: int,
                          db: Session = Depends(get_database),
-                         user=Depends(get_user)):
-    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=user.id).first()
+                        #  user=Depends(get_user)
+                         ):
+    conf = db.query(TrainingConfiguration).filter_by(id=conf_id, created_by=1).first()
     if conf is None:
         raise
-    task = train.delay(conf_id)
+    task = train.delay(conf_id, 1)
     return JSONResponse({"task_id": task.id})
 
 
