@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get('/all', response_model=List[TrainingConfGetFull])
 async def get_all_configurations(db: Session = Depends(get_database),
-                                #  user=Depends(get_user)
+                                 user=Depends(get_user)
                                  ):
     conf = db.query(TrainingConfiguration).all()
     return conf
@@ -29,7 +29,7 @@ async def get_all_configurations(db: Session = Depends(get_database),
 @router.get('/{conf_id}', response_model=TrainingConfGetFull)
 async def get_conf_by_id(conf_id: int,
                          db: Session = Depends(get_database),
-                        #  user=Depends(get_user)
+                         user=Depends(get_user)
                          ):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     return conf
@@ -38,7 +38,7 @@ async def get_conf_by_id(conf_id: int,
 @router.post('/', response_model=TrainingConfGetFull)
 async def create_configuration(params: TrainingConf,
                                db: Session = Depends(get_database),
-                            #    user=Depends(get_user)
+                               user=Depends(get_user)
                                ):
     print(params)
     training_params = {
@@ -67,7 +67,7 @@ async def create_configuration(params: TrainingConf,
 async def upload_dataset(conf_id: int,
                          dataset: UploadFile = File(...),
                          db: Session = Depends(get_database),
-                        #  user=Depends(get_user)
+                         user=Depends(get_user)
                          ):
     data = await dataset.read()
     try:
@@ -90,7 +90,7 @@ async def upload_dataset(conf_id: int,
 @router.post('/{conf_id}/start')
 async def start_training(conf_id: int,
                          db: Session = Depends(get_database),
-                        #  user=Depends(get_user)
+                         user=Depends(get_user)
                          ):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
@@ -99,20 +99,10 @@ async def start_training(conf_id: int,
     return JSONResponse({"task_id": task.id})
 
 
-@router.get("/tasks/{task_id}")
-def get_status(task_id):
-    task_result = AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result
-    }
-    return JSONResponse(result)
-
-
 @router.delete('/{conf_id}')
 async def delete_conf(conf_id: int,
-                      db: Session = Depends(get_database)):
+                      db: Session = Depends(get_database),
+                      user = Depends(get_user)):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
@@ -122,7 +112,8 @@ async def delete_conf(conf_id: int,
 @router.get('/{conf_id}/{file_type}', status_code=302, response_class=RedirectResponse)
 async def get_file(conf_id: int,
                    file_type: str,
-                   db: Session = Depends(get_database)):
+                   db: Session = Depends(get_database),
+                   user = Depends(get_user)):
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise

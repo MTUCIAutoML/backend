@@ -71,6 +71,22 @@ def train(conf_id: int, user_id: int):
                     clean_data['precision'] = data[key]
                 elif key.strip() == 'metrics/recall(B)':
                     clean_data['recall'] = data[key]
+                elif key.strip() == 'train/box_loss':
+                    clean_data['train/box_loss'] = data[key]
+                elif key.strip() == 'train/cls_loss':
+                    clean_data['train/cls_loss'] = data[key]
+                elif key.strip() == 'train/dfl_loss':
+                    clean_data['train/dfl_loss'] = data[key]
+                elif key.strip() == 'metrics/mAP50(B)':
+                    clean_data['mAP50'] = data[key]
+                elif key.strip() == 'metrics/mAP50-95(B)':
+                    clean_data['mAP50-95'] = data[key]
+                elif key.strip() == 'val/box_loss':
+                    clean_data['val/box_loss'] = data[key]
+                elif key.strip() == 'val/cls_loss':
+                    clean_data['val/cls_loss'] = data[key]
+                elif key.strip() == 'val/dfl_loss':
+                    clean_data['val/dfl_loss'] = data[key]
 
             conf.result_metrics = clean_data
             db.commit()
