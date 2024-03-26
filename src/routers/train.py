@@ -14,6 +14,7 @@ from s3.s3 import s3
 from models.models import TrainingConfiguration
 from mlcore.celery_app import train
 from auth import get_user
+import errors
 
 router = APIRouter()
 
@@ -22,6 +23,8 @@ router = APIRouter()
 async def get_all_configurations(db: Session = Depends(get_database),
                                  user=Depends(get_user)
                                  ):
+    if user is None:
+        raise errors.unauthorized()
     conf = db.query(TrainingConfiguration).all()
     return conf
 
@@ -31,6 +34,8 @@ async def get_conf_by_id(conf_id: int,
                          db: Session = Depends(get_database),
                          user=Depends(get_user)
                          ):
+    if user is None:
+        raise errors.unauthorized()
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     return conf
 
@@ -40,6 +45,8 @@ async def create_configuration(params: TrainingConf,
                                db: Session = Depends(get_database),
                                user=Depends(get_user)
                                ):
+    if user is None:
+        raise errors.unauthorized()
     print(params)
     training_params = {
         'epochs': params.epochs,
@@ -69,6 +76,8 @@ async def upload_dataset(conf_id: int,
                          db: Session = Depends(get_database),
                          user=Depends(get_user)
                          ):
+    if user is None:
+        raise errors.unauthorized()
     data = await dataset.read()
     try:
         training = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
@@ -92,6 +101,8 @@ async def start_training(conf_id: int,
                          db: Session = Depends(get_database),
                          user=Depends(get_user)
                          ):
+    if user is None:
+        raise errors.unauthorized()
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
@@ -103,6 +114,8 @@ async def start_training(conf_id: int,
 async def delete_conf(conf_id: int,
                       db: Session = Depends(get_database),
                       user = Depends(get_user)):
+    if user is None:
+        raise errors.unauthorized()
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
@@ -114,6 +127,8 @@ async def get_file(conf_id: int,
                    file_type: str,
                    db: Session = Depends(get_database),
                    user = Depends(get_user)):
+    if user is None:
+        raise errors.unauthorized()
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
