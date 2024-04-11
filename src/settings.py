@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     AWS_REGION: Optional[str] = None
     AWS_BUCKET: str = 'automl'
 
+    KAFKA_URL: str = "kafka:9092"
+
     SERVER_ADDR: str = "0.0.0.0"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
