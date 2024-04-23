@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import os.path as p
 
 from db import Session
-from models.models import TrainingConfiguration
+from models.user import TrainingConfiguration
 from s3.s3 import s3
 
 

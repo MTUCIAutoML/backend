@@ -11,7 +11,7 @@ from starlette.responses import JSONResponse
 from db import get_database, Session
 from schemas.train import TrainingConf, TrainingConfGetFull
 from s3.s3 import s3
-from models.models import TrainingConfiguration
+from models.user import TrainingConfiguration
 from mlcore.celery_app import train
 from auth import get_user
 import errors
@@ -106,7 +106,7 @@ async def start_training(conf_id: int,
     conf = db.query(TrainingConfiguration).filter_by(id=conf_id).first()
     if conf is None:
         raise
-    task = train.delay(conf_id, 1)
+    task = train.delay(conf_id, user.id)
     return JSONResponse({"task_id": task.id})
 
 

@@ -1,2 +1,2 @@
 import models.base as base
-import models.models as training
+import models.user as training
