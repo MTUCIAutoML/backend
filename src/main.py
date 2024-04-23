@@ -9,15 +9,7 @@ from db.initdb import initdb
 app = FastAPI(debug=settings.SERVER_TEST)
 app.include_router(router)
 
-origins = [
-    "localhost:3000",
-    "127.0.0.1:3000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://172.16.1.10:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+origins = ['*']
 
 app.add_middleware(CORSMiddleware,
                    allow_origins=origins,
