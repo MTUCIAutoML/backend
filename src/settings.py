@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY_ID: str = 'automl'
     AWS_SECRET_ACCESS_KEY: str = 'ViVyOUQtHVfGaZuOVm1yhro5YLFJcsYf'
     AWS_REGION: Optional[str] = None
-    AWS_BUCKET: str = 'automl'
+    AWS_BUCKET: str = 'cvat'
 
     CELERY_BROKER_URL: str = 'redis://172.16.1.10:6379/0'
     CELERY_RESULT_BACKEND: str = 'redis://172.16.1.10:6379/0'
@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     SERVER_ADDR: str = "0.0.0.0"
     SERVER_PORT: int = 8000
     SERVER_TEST: bool = True
+
+    CVAT_URL = 'http://192.168.0.23:8080/'
 
     class Config:
         env_file = "../.env"

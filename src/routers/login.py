@@ -9,6 +9,8 @@ from auth import get_user, init_tokens, refresh_tokens
 from db import Session, get_database
 from models.user import User
 from schemas.login import Refresh, AccountCredentials, UserResponse
+from cvat.cvat import cvat_register_user, cvat_login_user, cvat_s3_create
+from s3.s3 import s3
 
 router = APIRouter()
 
@@ -25,6 +27,9 @@ async def login(
         raise errors.invalid_credentials()
     if not user.verify_password(credentials.password):
         raise errors.invalid_credentials()
+    cookie = cvat_login_user(credentials.password, credentials.login)
+    response.set_cookie('sessionid', cookie['sessionid'])
+    response.set_cookie('csrftoken', cookie['csrftoken'])
     return init_tokens(user, response)
 
 
@@ -56,7 +61,12 @@ async def register_user(
     user.password = credentials.password
     db.add(user)
     db.commit()
-
+    
+    cvat_register_user(credentials.login, credentials.password, credentials.login)
+    s3.create_bucket(f"user-{user.id}")
+    cookie = cvat_login_user(credentials.password, credentials.login)
+    print(cookie)
+    cvat_s3_create(cookie['sessionid'], cookie['csrftoken'], user.id)
     return UserResponse.from_orm(user)
 
     

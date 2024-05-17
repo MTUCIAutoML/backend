@@ -15,6 +15,7 @@ class TrainingConf(BaseModel):
     optimizer: Optional[str] = 'auto'
     class_names: List[str]
     device: str
+    dataset_id: int
 
 
 class TrainingConfGetFull(BaseModel):

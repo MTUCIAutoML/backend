@@ -14,4 +14,4 @@ class Refresh(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    login: EmailStr
+    email: EmailStr

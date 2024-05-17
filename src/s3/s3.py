@@ -14,28 +14,28 @@ class S3:
                                              aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                                              region_name=settings.AWS_REGION)
         self.s3client = self.session.client(service_name='s3', endpoint_url=settings.AWS_HOST)
-        self.create_bucket(settings.AWS_BUCKET)
+        # self.create_bucket(settings.AWS_BUCKET)
 
-    def has_file(self, fileid: str):
+    def has_file(self, fileid: str, bucket: str):
         try:
-            self.s3client.head_object(Bucket=settings.AWS_BUCKET, Key=fileid)
+            self.s3client.head_object(Bucket=bucket, Key=fileid)
             return True
         except botocore.exceptions.ClientError:
             return False
 
-    def upload_file(self, file, fileid: str):
-        self.s3client.upload_fileobj(file, settings.AWS_BUCKET, fileid)
+    def upload_file(self, file, fileid: str, bucket: str):
+        self.s3client.upload_fileobj(file, bucket, fileid)
 
-    def download_file(self, file, fileid: str):
+    def download_file(self, file, fileid: str, bucket: str):
         try:
-            self.s3client.head_object(Bucket=settings.AWS_BUCKET, Key=fileid)
-            self.s3client.download_fileobj(settings.AWS_BUCKET, fileid, file)
+            self.s3client.head_object(Bucket=bucket, Key=fileid)
+            self.s3client.download_fileobj(bucket, fileid, file)
             file.seek(0)
         except botocore.exceptions.ClientError:
             raise FileNotFoundError("File not found")
 
-    def delete_file(self, fileid: str):
-        self.s3client.delete_object(Bucket=settings.AWS_BUCKET, Key=fileid)
+    def delete_file(self, fileid: str, bucket: str):
+        self.s3client.delete_object(Bucket=bucket, Key=fileid)
 
     def create_bucket(self, name):
         try:

@@ -1,12 +1,14 @@
 import os
 import os
 import zipfile
+import logging
 
 import pandas as pd
 from fastapi import Depends
 from ultralytics import YOLO
 from tempfile import TemporaryDirectory
 from celery import Celery
+from pathlib import Path
 
 import os.path as p
 
@@ -34,22 +36,52 @@ def train(conf_id: int, user_id: int):
     try:
         with TemporaryDirectory(dir=os.getcwd()) as tmp:
 
-            with open(tmp + f'/{conf.name}.zip', mode='w+b') as f:
-                s3.download_file(f, conf.dataset_s3_location)
 
-            with zipfile.ZipFile(tmp + f'/{conf.name}.zip', 'r') as f:
-                f.extractall(path=tmp + '/dataset')
+            logging.info("starting download dataset")
+            with open(tmp + conf.dataset_s3_location, mode='w+b') as f:
+                print(conf.dataset_s3_location),
+                print(f"user-{user_id}")
+                s3.download_file(f, conf.dataset_s3_location, f"user-{user_id}")
+            
+            
+            logging.info("starting extract data")
+            with zipfile.ZipFile(tmp + conf.dataset_s3_location, 'r') as f:
+                f.extract('obj.names', path=tmp + '/data')
+                [f.extract(file, path=tmp + '/data/images/') for file in f.namelist() if (file.endswith('.jpg') and file.startswith('obj_Train_data'))]
+                [f.extract(file, path=tmp + '/data/images/') for file in f.namelist() if (file.endswith('.jpg') and file.startswith('obj_Validation_data'))]
+                [f.extract(file, path=tmp + '/data/labels/') for file in f.namelist() if (file.endswith('.txt') and file.startswith('obj_Train_data'))]
+                [f.extract(file, path=tmp + '/data/labels/') for file in f.namelist() if (file.endswith('.txt') and file.startswith('obj_Validation_data'))]
 
-            with open(tmp + '/dataset/data.yaml', 'w') as f:
-                classes = conf.training_conf['classes']
+            path = Path(tmp + '/data/images/obj_Train_data')
+            path.rename(tmp + '/data/images/train')
+
+            path = Path(tmp + '/data/labels/obj_Train_data')
+            path.rename(tmp + '/data/labels/train')
+
+            print(os.listdir(tmp + '/data/images/train/'))
+            logging.info("generating yaml file")
+            classes = []
+            with open(tmp + '/data/obj.names', 'r') as f:
+                for line in f.readlines():
+                    classes.append(line.replace('\n', ''))
+            print(classes)
+            
+            
+            training_conf = conf.training_conf
+            training_conf['classes'] = classes
+            conf.training_conf = training_conf
+            db.commit()
+            
+            
+            with open(tmp + '/data/data.yaml', 'w') as f:
                 names = [f'  {classes.index(name)}: {name}\n' for name in classes]
-                f.writelines(['path: ' + tmp + '/dataset\n',
-                            'train: train/images\n',
-                            'val: val/images\n',
+                f.writelines(['path: ' + tmp + '/data/\n',
+                            'train: images/train\n',
+                            'val: images/train\n',
                             'names:\n'] + names)
 
             yolo.train(
-                data=tmp + '/dataset/data.yaml',
+                data=tmp + '/data/data.yaml',
                 project=tmp,
                 name=conf.name,
                 epochs=conf.training_conf['epochs'],
