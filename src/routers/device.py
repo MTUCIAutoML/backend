@@ -14,8 +14,8 @@ async def get_gpu_memory():
         free = torch.cuda.mem_get_info()[0] / 1024 ** 3
         total = torch.cuda.mem_get_info()[1] / 1024 ** 3
         return Device(
-            total=str(total),
-            usage=str(total - free)
+            total=f'{total:.2f} Гб',
+            usage=f'{total - free:.2f} Гб'
         )
     raise
 
@@ -23,6 +23,6 @@ async def get_gpu_memory():
 @router.get("/cpu")
 async def get_cpu_usage():
     return Device(
-        total=str(psutil.virtual_memory() [0] / 1024 ** 3),
-        usage=str(psutil.virtual_memory() [3] / 1024 ** 3)
+        total=f'{psutil.virtual_memory() [0] / 1024 ** 3} Гб',
+        usage=f'{psutil.virtual_memory() [3] / 1024 ** 3} Гб'
     )
