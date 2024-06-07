@@ -23,6 +23,6 @@ async def get_gpu_memory():
 @router.get("/cpu")
 async def get_cpu_usage():
     return Device(
-        total=f'{psutil.virtual_memory() [0] / 1024 ** 3} Гб',
-        usage=f'{psutil.virtual_memory() [3] / 1024 ** 3} Гб'
+        total=f'{psutil.virtual_memory() [0] / 1024 ** 3:.2f} Гб',
+        usage=f'{psutil.virtual_memory() [3] / 1024 ** 3:.2f} Гб'
     )
