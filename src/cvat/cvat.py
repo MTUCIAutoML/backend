@@ -112,6 +112,23 @@ def cvat_export_dataset(sessionid: str, csrftoken: str, dataset_id: int, conf_id
     print(response.content)
     return response.status_code
 
+
+def cvat_delete_project(
+        sessionid: str, 
+        csrftoken: str, 
+        dataset_id: int
+):
+    header = {"content-type": "application/json"}
+    cookie = {
+        'sessionid': sessionid,
+        'csrftoken': csrftoken
+    }
+
+    header['x-csrftoken'] = csrftoken
+    response = requests.delete(settings.CVAT_URL + f'api/projects/{dataset_id}', headers=header, cookies=cookie)
+
+    return response.status_code
+
     
 
 if __name__ == "__main__":
