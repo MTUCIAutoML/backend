@@ -8,8 +8,8 @@ from routers.device import router as device
 
 router = APIRouter()
 
-router.include_router(pipeline, prefix='/pipeline', tags=['Pipeline'])
-router.include_router(train, prefix='/train', tags=['Train'])
-router.include_router(login, prefix='/user', tags=['Login'])
-router.include_router(dataset, prefix='/dataset', tags=['Dataset'])
-router.include_router(device, prefix='/device', tags=['Device'])
+router.include_router(pipeline, prefix='/api/pipeline', tags=['Pipeline'])
+router.include_router(train, prefix='/api/train', tags=['Train'])
+router.include_router(login, prefix='/api/user', tags=['Login'])
+router.include_router(dataset, prefix='/api/dataset', tags=['Dataset'])
+router.include_router(device, prefix='/api/device', tags=['Device'])
